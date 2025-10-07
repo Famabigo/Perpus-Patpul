@@ -16,7 +16,7 @@
                     <th style="width: 150px;">Tanggal Pinjam</th>
                     <th style="width: 150px;">Tanggal Kembali</th>
                     <th style="width: 120px;">Status</th>
-                    <th style="width: 180px;">No. Antrian</th>
+                    <th style="width: 180px;">No. Pesanan</th>
                     <th style="width: 180px;">Aksi</th>
                 </tr>
             </thead>

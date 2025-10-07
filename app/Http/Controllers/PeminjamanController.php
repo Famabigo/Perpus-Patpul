@@ -91,7 +91,7 @@ class PeminjamanController extends Controller
         $p->queue_number = "PMJ-{$date}-{$random}";
         $p->book->decrement('stok');
         $p->save();
-        return back()->with('success', 'Peminjaman disetujui dengan nomor antrian: ' . $p->queue_number);
+        return back()->with('success', 'Peminjaman disetujui dengan no pesanan: ' . $p->queue_number);
     }
 
     public function reject($id)

@@ -24,7 +24,7 @@
                     <th style="width: 150px;" class="text-center">Tanggal Pinjam</th>
                     <th style="width: 150px;" class="text-center">Tanggal Kembali</th>
                     <th style="width: 150px;" class="text-center">Status</th>
-                    <th style="width: 200px;" class="text-center">No. Antrian</th>
+                    <th style="width: 200px;" class="text-center">No. Pesanan</th>
                 </tr>
             </thead>
             <tbody>

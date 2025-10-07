@@ -20,7 +20,7 @@ use App\Http\Controllers\AdminController;
 */
 
 Route::get('/', function () {
-    return redirect()->route('login');
+    return view('preview');
 });
 
 // Halaman dashboard hanya untuk user yang sudah login, dan diarahkan sesuai role SETELAH login
