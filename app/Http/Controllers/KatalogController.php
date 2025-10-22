@@ -19,4 +19,9 @@ class KatalogController extends Controller
         $books = $query->get();
         return view('katalog.index', compact('books'));
     }
+
+    public function show(Book $book)
+    {
+        return view('katalog.show', compact('book'));
+    }
 }

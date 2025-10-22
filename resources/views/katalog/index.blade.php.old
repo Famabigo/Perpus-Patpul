@@ -1,0 +1,264 @@
+
+<x-app-layout>
+<div class="bg-gradient-to-b from-purple-50/50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-4">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+            <div class="flex items-center gap-3">
+                <div class="p-2 bg-purple-100 rounded-lg">
+                    <i class="fas fa-books text-2xl text-purple-600"></i>
+                </div>
+                <h1 class="text-3xl font-bold bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent">Katalog Buku</h1>
+            </div>
+            @if(auth()->user() && auth()->user()->role === 'siswa')
+                <div class="flex gap-3 items-center">
+                    <a href="{{ route('siswa.peminjaman.index') }}" 
+                       class="inline-flex items-center px-4 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-xl hover:from-amber-600 hover:to-amber-700 transition-all duration-300 shadow hover:shadow-lg font-medium">
+                        <i class="fas fa-book-reader mr-2"></i>
+                        <span>Peminjaman Aktif</span>
+                    </a>
+                    <a href="{{ route('riwayat') }}" 
+                       class="inline-flex items-center px-4 py-2.5 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-xl hover:from-purple-700 hover:to-purple-800 transition-all duration-300 shadow hover:shadow-lg font-medium">
+                        <i class="fas fa-history mr-2"></i>
+                        <span>Riwayat</span>
+                    </a>
+                </div>
+            @endif
+        </div>
+    
+    <div class="max-w-4xl mx-auto mb-8">
+        <form method="GET" action="" class="relative">
+            <div class="flex items-center">
+                <div class="relative flex-1">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <i class="fas fa-search text-purple-400"></i>
+                    </div>
+                    <input type="text" 
+                           name="search" 
+                           class="block w-full pl-11 pr-4 py-3.5 border-2 border-purple-200 rounded-l-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-300 bg-white shadow-sm"
+                           placeholder="Cari judul, pengarang, atau kategori..." 
+                           value="{{ request('search') }}">
+                </div>
+                <button type="submit" 
+                        class="px-8 py-3.5 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-r-xl hover:from-purple-700 hover:to-purple-800 transition-all duration-300 shadow-sm hover:shadow-md font-medium">
+                    <i class="fas fa-search mr-2"></i>
+                    <span>Cari</span>
+                </button>
+            </div>
+        </form>
+    </div>
+    <div class="max-w-4xl mx-auto">
+        @if(session('success'))
+            <div class="mb-6 p-4 bg-green-50 border-2 border-green-200 rounded-xl text-green-700 flex items-center shadow-sm">
+                <i class="fas fa-check-circle mr-3 text-green-500 text-lg"></i>
+                <span class="font-medium">{{ session('success') }}</span>
+            </div>
+        @endif
+        @if(session('error'))
+            <div class="mb-6 p-4 bg-red-50 border-2 border-red-200 rounded-xl text-red-700 flex items-center shadow-sm">
+                <i class="fas fa-exclamation-circle mr-3 text-red-500 text-lg"></i>
+                <span class="font-medium">{{ session('error') }}</span>
+            </div>
+        @endif
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 p-6">
+        <style>
+            .book-card {
+                @apply bg-white rounded-xl shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-xl border border-purple-100/50 overflow-hidden cursor-pointer;
+            }
+            .book-cover {
+                @apply aspect-[3/4] relative overflow-hidden;
+            }
+            .book-header {
+                @apply bg-gradient-to-r from-purple-600 to-purple-700 p-6 text-white;
+            }
+            .book-content {
+                @apply p-6 bg-white;
+            }
+            .book-badge {
+                @apply px-4 py-1.5 rounded-full text-sm font-medium inline-flex items-center gap-2;
+            }
+            .book-badge.category {
+                @apply bg-purple-100 text-purple-700;
+            }
+            .book-badge.status {
+                @apply bg-opacity-10;
+            }
+            .book-badge.status.available {
+                @apply bg-green-500 text-green-700;
+            }
+            .book-badge.status.unavailable {
+                @apply bg-red-500 text-red-700;
+            }
+            .book-stats {
+                @apply inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-purple-50 text-purple-700 font-medium text-sm;
+            }
+            .book-form {
+                @apply mt-6 p-6 bg-purple-50/50 rounded-xl border border-purple-100;
+            }
+            .form-input {
+                @apply w-full px-4 py-2.5 rounded-lg border border-purple-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-300;
+            }
+            .book-btn {
+                @apply w-full px-4 py-3 rounded-lg font-medium text-white transition-all duration-300 flex items-center justify-center gap-2;
+                padding: 0.6rem 1.2rem;
+                font-weight: 500;
+                transition: all 0.3s ease;
+                background: linear-gradient(135deg, #8B5CF6, #6D28D9);
+                color: white;
+                border: none;
+            }
+            .book-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(147, 51, 234, 0.2);
+            }
+            .book-description {
+                color: #4B5563;
+                font-size: 0.95rem;
+                line-height: 1.6;
+                margin: 1rem 0;
+            }
+        </style>
+        @forelse($books as $book)
+            <a href="{{ route('katalog.show', $book) }}" class="block">
+        <div class="w-full h-full">
+            <div class="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer overflow-hidden h-full flex flex-col">
+                @if($book->cover_image)
+                    <img src="{{ asset('storage/' . $book->cover_image) }}" 
+                         alt="Cover {{ $book->judul }}"
+                         class="w-full aspect-[3/4] object-cover">
+                @else
+                    <div class="aspect-[3/4] bg-purple-100 flex items-center justify-center">
+                        <i class="fas fa-book text-6xl text-purple-400"></i>
+                    </div>
+                @endif
+                <div class="bg-gradient-to-r from-purple-600 to-purple-700 p-6 text-white relative">
+                    <div class="relative z-10">
+                        <h3 class="text-xl font-bold mb-2 line-clamp-2">{{ $book->judul }}</h3>
+                        <p class="text-white/80 text-sm">oleh {{ $book->pengarang }}</p>
+                    </div>
+                </div>
+                <div class="p-6 flex-grow flex flex-col">
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-medium inline-flex items-center">
+                            <i class="fas fa-bookmark mr-1.5 text-xs"></i>
+                            {{ $book->kategori }}
+                        </span>
+                        <span class="px-3 py-1 rounded-full text-sm font-medium inline-flex items-center {{ $book->stok > 0 
+                            ? 'bg-green-100 text-green-700' 
+                            : 'bg-red-100 text-red-700' }}">
+                            <i class="fas {{ $book->stok > 0 ? 'fa-check' : 'fa-times' }} mr-1.5 text-xs"></i>
+                            {{ $book->stok > 0 ? 'Tersedia' : 'Habis' }}
+                        </span>
+                    </div>
+                    <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-purple-50 text-purple-700 rounded-lg text-sm font-medium mb-4">
+                        <i class="fas fa-book-open text-sm"></i>
+                        Stok: {{ $book->stok }}
+                    </div>
+                    <p class="text-gray-600 text-sm leading-relaxed mb-6 flex-grow line-clamp-3">
+                        {{ Str::limit($book->sinopsis, 150) }}
+                    </p>
+                    @if(auth()->user() && auth()->user()->role === 'siswa')
+                        <form method="POST" action="{{ route('pinjam', $book->id) }}" 
+                              class="bg-purple-50/50 rounded-xl p-6 border border-purple-100" 
+                              onclick="event.stopPropagation();">
+                            @csrf
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <label class="block text-purple-900 text-sm font-medium mb-2">
+                                        <i class="fas fa-calendar-plus mr-2 w-4 text-center"></i>Tanggal Pinjam
+                                    </label>
+                                    <input type="date" 
+                                           name="tanggal_pinjam" 
+                                           class="w-full px-4 py-2.5 rounded-lg border border-purple-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-300 bg-white" 
+                                           value="{{ date('Y-m-d') }}" 
+                                           min="{{ date('Y-m-d') }}" 
+                                           required>
+                                </div>
+                                <div>
+                                    <label class="block text-purple-900 text-sm font-medium mb-2">
+                                        <i class="fas fa-calendar-check mr-2 w-4 text-center"></i>Tanggal Kembali
+                                    </label>
+                                    <input type="date" 
+                                           name="tanggal_kembali" 
+                                           class="w-full px-4 py-2.5 rounded-lg border border-purple-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-300 bg-white" 
+                                           min="{{ date('Y-m-d') }}" 
+                                           required>
+                                </div>
+                            </div>
+                            <button type="submit" 
+                                    class="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white font-medium py-3 px-4 rounded-lg hover:from-purple-700 hover:to-purple-800 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md"
+                                    {{ $book->stok < 1 ? 'disabled' : '' }}>
+                                <i class="fas fa-bookmark"></i>
+                                {{ $book->stok > 0 ? 'Pinjam Buku' : 'Stok Habis' }}
+                            </button>
+                            <script>
+                            (function() {
+                                var form = document.currentScript.closest('form');
+                                var tglPinjam = form.querySelector('input[name="tanggal_pinjam"]');
+                                var tglKembali = form.querySelector('input[name="tanggal_kembali"]');
+                                function setTanggalKembali() {
+                                    if (tglPinjam.value) {
+                                        var pinjamDate = new Date(tglPinjam.value);
+                                        pinjamDate.setDate(pinjamDate.getDate() + 7);
+                                        var yyyy = pinjamDate.getFullYear();
+                                        var mm = String(pinjamDate.getMonth() + 1).padStart(2, '0');
+                                        var dd = String(pinjamDate.getDate()).padStart(2, '0');
+                                        var maxKembali = yyyy + '-' + mm + '-' + dd;
+                                        tglKembali.min = tglPinjam.value;
+                                        tglKembali.max = maxKembali;
+                                        if (!tglKembali.value || tglKembali.value < tglPinjam.value || tglKembali.value > maxKembali) {
+                                            tglKembali.value = maxKembali;
+                                        }
+                                    }
+                                }
+                                tglPinjam.addEventListener('change', setTanggalKembali);
+                                setTanggalKembali();
+                            })();
+                            </script>
+                        </form>
+                    @endif
+                </div>
+            </div>
+        </div>
+    <!-- Modal Detail Buku -->
+    <div class="modal fade" id="bookDetailModal" tabindex="-1" aria-labelledby="bookDetailModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content rounded-2xl overflow-hidden border-0 shadow-xl">
+          <div class="modal-header bg-gradient-to-r from-purple-600 to-purple-700 text-white p-6">
+            <h5 class="modal-title text-xl font-bold" id="bookDetailModalLabel">Detail Buku</h5>
+            <button type="button" class="text-white hover:text-white/80 transition-colors" data-bs-dismiss="modal" aria-label="Close">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          <div class="modal-body p-8">
+            <h3 class="text-2xl font-bold text-purple-900 mb-2" id="modalJudul"></h3>
+            <h5 class="text-gray-600 mb-6">oleh <span id="modalPengarang" class="font-medium"></span></h5>
+            <div class="flex flex-wrap gap-2 mb-6">
+                <span class="px-4 py-1.5 bg-purple-100 text-purple-700 rounded-full text-sm font-medium inline-flex items-center">
+                    <i class="fas fa-bookmark mr-2 text-xs"></i>
+                    <span id="modalKategori"></span>
+                </span>
+                <span class="px-4 py-1.5 bg-green-100 text-green-700 rounded-full text-sm font-medium inline-flex items-center">
+                    <i class="fas fa-book-open mr-2 text-xs"></i>
+                    <span id="modalStok"></span>
+                </span>
+            </div>
+            <div class="prose prose-purple max-w-none">
+              <p class="text-gray-600 leading-relaxed text-base" id="modalSinopsis"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    @empty
+        <div class="col-span-full">
+            <div class="bg-blue-50 border-2 border-blue-200 rounded-xl p-6 text-blue-700 flex items-center shadow-sm">
+                <i class="fas fa-info-circle mr-3 text-blue-500 text-lg"></i>
+                <span class="font-medium">Tidak ada buku yang ditemukan.</span>
+            </div>
+        </div>
+    @endforelse
+</div>
+</div>
+</x-app-layout>

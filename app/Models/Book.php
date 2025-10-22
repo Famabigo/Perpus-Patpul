@@ -15,5 +15,6 @@ class Book extends Model
         'kategori',
         'sinopsis',
         'stok',
+        'cover_image',
     ];
 }

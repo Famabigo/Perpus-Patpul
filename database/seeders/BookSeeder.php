@@ -22,11 +22,12 @@ class BookSeeder extends Seeder
                 'stok' => 5
             ],
             [
-                'judul' => 'Rich Dad Poor Dad',
-                'pengarang' => 'Robert T. Kiyosaki',
-                'kategori' => 'Keuangan',
-                'sinopsis' => 'Pelajaran keuangan penting yang diajarkan orang kaya kepada anak-anak mereka yang tidak diajarkan orang miskin dan kelas menengah kepada anak-anak mereka.',
-                'stok' => 3
+                'judul' => 'Inequity Under the Skies of Lumina',
+                'pengarang' => 'Farrel A. Fabian',
+                'kategori' => 'Fantasy',
+                'sinopsis' => 'Di negeri Lumina, dua ras hidup dalam ketimpangan — manusia biasa yang berkuasa dan manusia sihir yang ditindas. Seorang anak bernama Ravel tanpa sengaja mengungkap kekuatan terlarangnya, memaksanya melarikan diri dari dunia yang menolak dirinya. Di tengah keputusasaan, ia bertemu seorang penyihir misterius yang mengubah jalan hidupnya. Saat Ravel tumbuh dewasa dan menatap masa lalunya yang kelam, ia bertekad menentang ketidakadilan yang telah lama membelenggu negerinya.
+                Namun, mampukah Ravel menghadapi kekuatan tirani yang menguasai Lumina dan menemukan arti sebenarnya dari kekuatan yang ia miliki?',
+                'stok' => 1
             ],
             [
                 'judul' => 'Filosofi Teras',

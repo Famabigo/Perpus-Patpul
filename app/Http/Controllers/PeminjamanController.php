@@ -39,10 +39,35 @@ class PeminjamanController extends Controller
     // Untuk admin: daftar peminjaman aktif
     public function aktifAdmin()
     {
-        $aktif = Peminjaman::with('user', 'book')
-            ->whereIn('status', ['pending', 'approved'])
-            ->orderByDesc('created_at')
-            ->get();
+        $query = Peminjaman::with('user', 'book')
+            ->whereIn('status', ['pending', 'approved']);
+
+        // Filter pencarian
+        if (request('search')) {
+            $search = request('search');
+            $query->where(function($q) use ($search) {
+                $q->whereHas('user', function($q) use ($search) {
+                    $q->where('name', 'like', '%' . $search . '%');
+                })
+                ->orWhereHas('book', function($q) use ($search) {
+                    $q->where('judul', 'like', '%' . $search . '%');
+                })
+                ->orWhere('queue_number', 'like', '%' . $search . '%');
+            });
+        }
+
+        // Filter status
+        if (request('status')) {
+            $query->where('status', request('status'));
+        }
+
+        // Filter tanggal
+        if (request('tanggal')) {
+            $query->whereDate('tanggal_pinjam', request('tanggal'));
+        }
+
+        $aktif = $query->orderByDesc('created_at')->get();
+        
         return view('peminjaman.aktif_admin', compact('aktif'));
     }
 
@@ -69,8 +94,29 @@ class PeminjamanController extends Controller
         if ($book->stok < 1) {
             return back()->with('error', 'Stok buku habis!');
         }
-        $tanggal_pinjam = request('tanggal_pinjam') ?? now();
-        $tanggal_kembali = request('tanggal_kembali') ?? null;
+        
+        $tanggal_pinjam = request('tanggal_pinjam') ?? now()->format('Y-m-d');
+        
+        // Hitung tanggal kembali otomatis 7 hari dari tanggal pinjam
+        $tanggal_kembali = request('tanggal_kembali');
+        
+        if (!$tanggal_kembali) {
+            // Jika tidak diisi, set otomatis 7 hari dari tanggal pinjam
+            $tanggal_kembali = \Carbon\Carbon::parse($tanggal_pinjam)->addDays(7)->format('Y-m-d');
+        } else {
+            // Validasi: tanggal kembali tidak boleh lebih dari 7 hari dari tanggal pinjam
+            $batas_kembali = \Carbon\Carbon::parse($tanggal_pinjam)->addDays(7);
+            $tgl_kembali_input = \Carbon\Carbon::parse($tanggal_kembali);
+            
+            if ($tgl_kembali_input->gt($batas_kembali)) {
+                return back()->with('error', 'Batas peminjaman maksimal 7 hari dari tanggal pinjam!');
+            }
+            
+            if ($tgl_kembali_input->lt(\Carbon\Carbon::parse($tanggal_pinjam))) {
+                return back()->with('error', 'Tanggal kembali tidak boleh lebih awal dari tanggal pinjam!');
+            }
+        }
+        
         Peminjaman::create([
             'user_id' => auth()->id(),
             'book_id' => $book->id,
@@ -78,7 +124,8 @@ class PeminjamanController extends Controller
             'tanggal_kembali' => $tanggal_kembali,
             'status' => 'pending',
         ]);
-        return back()->with('success', 'Request peminjaman dikirim, tunggu persetujuan admin.');
+        
+        return back()->with('success', 'Request peminjaman dikirim, tunggu persetujuan admin. Batas pengembalian: ' . \Carbon\Carbon::parse($tanggal_kembali)->format('d/m/Y'));
     }
 
     public function approve($id)

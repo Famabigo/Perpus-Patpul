@@ -20,14 +20,21 @@
                     </thead>
                     <tbody>
                         @forelse($terlambat as $item)
-                        <tr>
+                        @php
+                            $tanggalKembali = \Carbon\Carbon::parse($item->tanggal_kembali)->startOfDay();
+                            $today = \Carbon\Carbon::now()->startOfDay();
+                            $hariTerlambat = $today->diffInDays($tanggalKembali);
+                        @endphp
+                        <tr class="table-danger">
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $item->user->name ?? '-' }}</td>
                             <td>{{ $item->book->judul ?? '-' }}</td>
                             <td>{{ $item->tanggal_pinjam }}</td>
                             <td>{{ $item->tanggal_kembali ?? '-' }}</td>
                             <td>
-                                <span class="badge bg-danger">Terlambat</span>
+                                <span class="badge bg-danger">
+                                    <i class="fas fa-exclamation-triangle mr-1"></i>Terlambat {{ $hariTerlambat }} Hari
+                                </span>
                             </td>
                         </tr>
                         @empty

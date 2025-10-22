@@ -35,7 +35,9 @@ class BookController extends Controller
             'kategori' => 'required',
             'sinopsis' => 'required',
             'stok' => 'required|integer|min:0',
+            'cover_image' => 'nullable|url',
         ]);
+
         Book::create($request->all());
         return redirect()->route('books.index')->with('success', 'Buku berhasil ditambahkan!');
     }
@@ -67,7 +69,9 @@ class BookController extends Controller
             'kategori' => 'required',
             'sinopsis' => 'required',
             'stok' => 'required|integer|min:0',
+            'cover_image' => 'nullable|url',
         ]);
+        
         $book->update($request->all());
         return redirect()->route('books.index')->with('success', 'Buku berhasil diupdate!');
     }

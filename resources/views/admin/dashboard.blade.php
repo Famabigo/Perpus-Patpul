@@ -25,6 +25,20 @@
             <!-- Peminjaman Aktif -->
             <a href="{{ route('admin.peminjaman.aktif') }}" class="transform transition-all duration-300 hover:-translate-y-1">
                 <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-6 relative overflow-hidden group">
+                    <!-- Notifikasi Badge -->
+                    @if($peminjamanBaru > 0)
+                        <div class="absolute top-2 right-2 z-10">
+                            <div class="relative">
+                                <span class="flex h-6 w-6">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-6 w-6 bg-red-500 items-center justify-center text-white text-xs font-bold shadow-lg">
+                                        {{ $peminjamanBaru }}
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                    @endif
+                    
                     <div class="absolute inset-0 bg-black opacity-0 group-hover:opacity-5 transition-opacity duration-300"></div>
                     <div class="relative">
                         <div class="flex items-center justify-between mb-4">
@@ -57,6 +71,20 @@
             <!-- Total Siswa -->
             <a href="{{ route('admin.siswa') }}" class="transform transition-all duration-300 hover:-translate-y-1">
                 <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg p-6 relative overflow-hidden group">
+                    <!-- Notifikasi Badge -->
+                    @if($siswaMenunggu > 0)
+                        <div class="absolute top-2 right-2 z-10">
+                            <div class="relative">
+                                <span class="flex h-6 w-6">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-6 w-6 bg-red-500 items-center justify-center text-white text-xs font-bold shadow-lg">
+                                        {{ $siswaMenunggu }}
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                    @endif
+                    
                     <div class="absolute inset-0 bg-black opacity-0 group-hover:opacity-5 transition-opacity duration-300"></div>
                     <div class="relative">
                         <div class="flex items-center justify-between mb-4">
@@ -78,6 +106,10 @@
                 <a href="{{ route('admin.riwayat.peminjaman') }}" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg hover:from-purple-700 hover:to-purple-800 transition-all duration-300 shadow-md hover:shadow-lg">
                     <i class="fas fa-history mr-2"></i>
                     <span>Riwayat Peminjaman</span>
+                </a>
+                <a href="{{ route('laporan.index') }}" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-300 shadow-md hover:shadow-lg">
+                    <i class="fas fa-file-pdf mr-2"></i>
+                    <span>Laporan PDF</span>
                 </a>
             </div>
         </div>

@@ -21,6 +21,7 @@
         <table class="table table-bordered">
             <thead>
                 <tr>
+                    <th>Cover</th>
                     <th>Judul</th>
                     <th>Pengarang</th>
                     <th>Kategori</th>
@@ -31,6 +32,17 @@
             <tbody>
             @foreach($books as $book)
                 <tr>
+                    <td class="w-24">
+                        @if($book->cover_image)
+                            <img src="{{ $book->cover_image }}" 
+                                 alt="Cover {{ $book->judul }}" 
+                                 class="w-20 h-28 object-cover rounded shadow">
+                        @else
+                            <div class="w-20 h-28 bg-gray-100 flex items-center justify-center rounded shadow">
+                                <span class="text-gray-400">No Cover</span>
+                            </div>
+                        @endif
+                    </td>
                     <td>{{ $book->judul }}</td>
                     <td>{{ $book->pengarang }}</td>
                     <td>{{ $book->kategori }}</td>

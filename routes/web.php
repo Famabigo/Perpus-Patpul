@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\KatalogController;
 use App\Http\Controllers\PeminjamanController;
+use App\Http\Controllers\LaporanController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AdminController;
 
@@ -22,6 +23,8 @@ use App\Http\Controllers\AdminController;
 Route::get('/', function () {
     return view('preview');
 });
+
+Route::get('/katalog/{book}', [KatalogController::class, 'show'])->name('katalog.show');
 
 // Halaman dashboard hanya untuk user yang sudah login, dan diarahkan sesuai role SETELAH login
 Route::get('/dashboard', function () {
@@ -47,12 +50,14 @@ Route::middleware(['auth', 'isadmin'])->group(function () {
     Route::resource('books', BookController::class);
     Route::post('/peminjaman/{id}/approve', [PeminjamanController::class, 'approve'])->name('peminjaman.approve');
     Route::post('/peminjaman/{id}/reject', [PeminjamanController::class, 'reject'])->name('peminjaman.reject');
+    Route::post('/peminjaman/{id}/reject', [PeminjamanController::class, 'reject'])->name('peminjaman.reject');
     Route::post('/peminjaman/{id}/kembali', [PeminjamanController::class, 'kembali'])->name('peminjaman.kembali');
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->middleware(['auth', 'isadmin'])->name('admin.dashboard');
 
     // Daftar siswa menunggu persetujuan
     Route::get('/admin/siswa-menunggu', [AdminController::class, 'siswaMenunggu'])->name('admin.siswa.menunggu');
     Route::post('/admin/siswa/{id}/setujui', [AdminController::class, 'setujuiSiswa'])->name('admin.siswa.setujui');
+    Route::post('/admin/siswa/{id}/tolak', [AdminController::class, 'tolakSiswa'])->name('admin.siswa.tolak');
 
     // Daftar peminjaman aktif untuk admin
     Route::get('/admin/peminjaman-aktif', [PeminjamanController::class, 'aktifAdmin'])->name('admin.peminjaman.aktif');
@@ -67,6 +72,10 @@ Route::middleware(['auth', 'isadmin'])->group(function () {
     Route::get('/admin/siswa', [AdminController::class, 'daftarSiswa'])
         ->middleware(['auth', 'isadmin'])
         ->name('admin.siswa');
+
+    // Laporan
+    Route::get('/admin/laporan', [LaporanController::class, 'index'])->name('laporan.index');
+    Route::get('/admin/laporan/export-pdf', [LaporanController::class, 'exportPdf'])->name('laporan.export.pdf');
 });
 
 Route::get('/katalog', [KatalogController::class, 'index'])->middleware('auth')->name('katalog');

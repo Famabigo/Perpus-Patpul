@@ -14,10 +14,13 @@ class AdminController extends Controller
             ->whereDate('tanggal_kembali', '<', \Carbon\Carbon::today())
             ->count();
         $totalUser = \App\Models\User::where('role', 'siswa')->count();
+        $peminjamanBaru = \App\Models\Peminjaman::where('status', 'pending')->count();
+        $siswaMenunggu = \App\Models\User::where('role', 'siswa')->where('is_approved', false)->count();
 
         // Statistik peminjaman per bulan (12 bulan terakhir)
+        // Hitung semua peminjaman yang pernah disetujui (approved atau returned) di tahun ini
         $statistikPeminjaman = \App\Models\Peminjaman::selectRaw('MONTH(tanggal_pinjam) as bulan, COUNT(*) as total')
-            ->where('status', 'approved')
+            ->whereIn('status', ['approved', 'returned'])
             ->whereYear('tanggal_pinjam', now()->year)
             ->groupByRaw('MONTH(tanggal_pinjam)')
             ->orderByRaw('MONTH(tanggal_pinjam)')
@@ -29,7 +32,15 @@ class AdminController extends Controller
             $dataPeminjaman[] = $statistikPeminjaman[$i] ?? 0;
         }
 
-        return view('admin.dashboard', compact('totalBuku', 'totalPeminjaman', 'totalTerlambat', 'totalUser', 'dataPeminjaman'));
+        return view('admin.dashboard', [
+            'totalBuku' => $totalBuku,
+            'totalPeminjaman' => $totalPeminjaman,
+            'totalTerlambat' => $totalTerlambat,
+            'totalUser' => $totalUser,
+            'dataPeminjaman' => $dataPeminjaman,
+            'peminjamanBaru' => $peminjamanBaru,
+            'siswaMenunggu' => $siswaMenunggu
+        ]);
     }
 
     public function siswaMenunggu()
@@ -56,5 +67,12 @@ class AdminController extends Controller
     {
         $siswa = \App\Models\User::where('role', 'siswa')->get();
         return view('admin.siswa.index', compact('siswa'));
+    }
+
+    public function tolakSiswa($id)
+    {
+        $user = \App\Models\User::findOrFail($id);
+        $user->delete(); // Menghapus akun siswa yang ditolak
+        return back()->with('success', 'Akun siswa telah ditolak dan dihapus.');
     }
 }
